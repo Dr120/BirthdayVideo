@@ -1,0 +1,12 @@
+{
+  "name": "birthday-video-project",
+  "private": true,
+  "scripts": {
+    "setup": "npm --prefix editor ci && npm --prefix editor run download:media && npm --prefix editor run check:media",
+    "studio": "npm --prefix editor run studio",
+    "typecheck": "npm --prefix editor run typecheck",
+    "test": "npm --prefix editor test",
+    "build": "npm --prefix editor run build",
+    "render": "npm --prefix editor run render"
+  }
+}

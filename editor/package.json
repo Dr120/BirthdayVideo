@@ -1,0 +1,27 @@
+{
+  "name": "birthday-video",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts --no-open",
+    "typecheck": "tsc --noEmit",
+    "build": "remotion bundle src/index.ts",
+    "prepare:media": "node scripts/prepare-media.mjs",
+    "check:media": "node scripts/check-media.mjs",
+    "test": "node --test scripts/*.test.mjs",
+    "render": "npm run check:media && remotion render src/index.ts BirthdayFunk out/birthday-funk.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --concurrency=2",
+    "download:media": "python3 scripts/download-media.py"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.535",
+    "@remotion/media": "4.0.535",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.535"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}

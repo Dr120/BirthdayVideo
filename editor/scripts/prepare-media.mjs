@@ -1,0 +1,12 @@
+import {execFileSync} from 'node:child_process';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {makeTimeline,validateTimeline} from './timeline.mjs';
+execFileSync('python3',['scripts/analyze.py'],{stdio:'inherit'});
+const analysis=JSON.parse(readFileSync('src/analysis.json','utf8'));
+const manifest={...analysis,scenes:makeTimeline(analysis)};
+validateTimeline(manifest);
+writeFileSync('src/manifest.json',JSON.stringify(manifest,null,2)+'\n');
+const q=JSON.stringify;
+const jsx=manifest.scenes.map(s=>`      <Sequence name=${q(s.name)} from={${s.from}} durationInFrames={${s.duration}} premountFor={fps}>\n        <PanelGrid count={${s.shots.length}}>\n${s.shots.map(c=>`          <Shot file=${q(c.file)} trimSeconds={${c.trim}} playbackRate={${c.rate}} />`).join('\n')}\n        </PanelGrid>\n      </Sequence>`).join('\n');
+writeFileSync('src/BirthdayFunk.tsx',`// Authored timeline: edit each Sequence / Shot independently in Studio or source.\n// npm run prepare:media rebuilds this file from scripts/timeline.mjs.\nimport {AbsoluteFill,Sequence,staticFile,useVideoConfig,useCurrentFrame,interpolate} from 'remotion';\nimport {Audio} from '@remotion/media';\nimport {PanelGrid,Shot} from './components/Shot';\nexport const BirthdayFunk = () => {\n  const {fps,durationInFrames}=useVideoConfig();\n  const frame=useCurrentFrame();\n  return <AbsoluteFill style={{backgroundColor:'#111',opacity:interpolate(frame,[0,5,durationInFrames-12,durationInFrames-1],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'})}}>\n    <Audio src={staticFile(${q('media/'+manifest.music)})} premountFor={fps} volume={(f)=>interpolate(f,[0,3,durationInFrames-12,durationInFrames-1],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'})} />\n${jsx}\n  </AbsoluteFill>;\n};\n`);
+console.log(`Prepared ${manifest.scenes.length} scenes, ${manifest.durationInFrames} frames, ${manifest.rhythm.bpm} BPM`);

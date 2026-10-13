@@ -1,0 +1,7 @@
+node_modules/
+.npm-cache/
+editor/build/
+editor/out/
+editor/public/media/*
+!editor/public/media/.gitkeep
+*.log
